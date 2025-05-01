@@ -1,8 +1,19 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace AppTokenFromKms.Jwt
 {
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(Dictionary<string, string>))]
+    [JsonSerializable(typeof(Dictionary<string, object>))]
+    [JsonSerializable(typeof(string))]
+    [JsonSerializable(typeof(long))]
+    internal partial class SourceGenerationContext : JsonSerializerContext
+    {
+    }
+
     static class JwtGenerator
     {
         public static string CreateJwtBase(string clientId, uint expirationInSeconds)
@@ -17,7 +28,7 @@ namespace AppTokenFromKms.Jwt
                 { "alg", "RS256" },
                 { "typ", "JWT" },
             };
-            var jsonHeader = JsonSerializer.Serialize(header);
+            var jsonHeader = JsonSerializer.Serialize(header, typeof(Dictionary<string, string>), SourceGenerationContext.Default);
             var base64Header = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonHeader))
                 .TrimEnd('=')
                 .Replace('+', '-')
@@ -29,7 +40,7 @@ namespace AppTokenFromKms.Jwt
                 { "exp", new DateTimeOffset(now).AddSeconds(expirationInSeconds).ToUnixTimeSeconds() },
                 { "iss", clientId }
             };
-            var jsonPayload = JsonSerializer.Serialize(payload);
+            var jsonPayload = JsonSerializer.Serialize(payload, typeof(Dictionary<string, object>), SourceGenerationContext.Default);
             var base64Payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonPayload))
                 .TrimEnd('=')
                 .Replace('+', '-')
