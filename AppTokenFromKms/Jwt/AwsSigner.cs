@@ -2,22 +2,21 @@ using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
 using System.Text;
 
-namespace AppTokenFromKms.Jwt.Aws
+namespace AppTokenFromKms.Jwt
 {
-    class AwsSigner
+    class AwsSigner :ISigner
     {
         private readonly string _kmsKeyId;
+        private readonly AmazonKeyManagementServiceClient _kmsClient;
 
         public AwsSigner(string kmsKeyId)
         {
             _kmsKeyId = kmsKeyId;
+            _kmsClient = new AmazonKeyManagementServiceClient();
         }
 
-        public async Task<string> Sign(string payload, CancellationToken cancellationToken)
+        public async Task<string> SignAsync(string payload, CancellationToken cancellationToken)
         {
-            // Create a KMS client
-            var kmsClient = new AmazonKeyManagementServiceClient();
-
             // Create the request to sign the payload
             var signRequest = new SignRequest
             {
@@ -28,7 +27,7 @@ namespace AppTokenFromKms.Jwt.Aws
             };
 
             // Sign the payload using KMS
-            var signResponse = await kmsClient.SignAsync(signRequest, cancellationToken);
+            var signResponse = await _kmsClient.SignAsync(signRequest, cancellationToken);
 
             // Return the signature as a base64 string
             return Convert.ToBase64String(signResponse.Signature.ToArray())
