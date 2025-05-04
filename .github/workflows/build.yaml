@@ -4,11 +4,20 @@ on:
 
 jobs:
   build:
-    name: Build on ${{ matrix.os }}
+    name: Build on ${{ matrix.platform.rid }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+        platform: 
+          - os: windows-2025
+            rid: win-x64
+            exetension: .exe
+          - os: macos-14
+            rid: osx-x64
+            exetension: ""
+          - os: ubuntu-24.04
+            rid: linux-x64
+            exetension: ""
+    runs-on: ${{ matrix.platform.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,10 +28,10 @@ jobs:
       - name: Build
         run: |
           dotnet restore --locked-mode
-          dotnet publish -c Release -o out --no-restore --no-restore /p:DebugType=None /p:DebugSymbols=false
+          dotnet publish -c Release -o out --no-restore /p:DebugType=None /p:DebugSymbols=false
         working-directory: ./AppTokenFromKms
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AppTokenFromKms-${{ matrix.os }}
-          path: ./AppTokenFromKms/out/
+          name: AppTokenFromKms-${{ matrix.platform.rid }}
+          path: ./AppTokenFromKms/out/AppTokenFromKms${{ matrix.platform.exetension }}
