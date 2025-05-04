@@ -25,4 +25,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: AppTokenFromKms-${{ matrix.os }}
-          path: out/
+          path: ./AppTokenFromKms/out/
