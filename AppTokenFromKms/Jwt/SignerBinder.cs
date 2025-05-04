@@ -25,7 +25,7 @@ namespace AppTokenFromKms.Jwt
             }
             else if (!string.IsNullOrEmpty(azureKeyVaultKeyIdValue))
             {
-                throw new NotImplementedException("Azure Key Vault signing is not implemented yet.");
+                return new AzureSigner(azureKeyVaultKeyIdValue);
             }
             else
             {
