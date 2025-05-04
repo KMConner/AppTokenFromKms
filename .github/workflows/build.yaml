@@ -19,7 +19,7 @@ jobs:
       - name: Build
         run: |
           dotnet restore --locked-mode
-          dotnet publish -c Release -o out
+          dotnet publish -c Release -o out --no-restore --no-restore /p:DebugType=None /p:DebugSymbols=false
         working-directory: ./AppTokenFromKms
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
